@@ -13,7 +13,7 @@ struct stateN0{
   //Dos estados son iguales si la ubicación del jugador y la posición del colaborador, son iguales en ambos estados.
   bool operator==(const stateN0 &x)const{
     if(jugador == x.jugador and
-       colaborador.f == x.colaborador.f and colaborador.c == x.colaborador.c){
+       colaborador.f == x.colaborador.f and colaborador.c == x.colaborador.c and ultimaOrdenColaborador == x.ultimaOrdenColaborador){ //modificado
         return true;
     }
     else {
@@ -32,12 +32,15 @@ struct nodeN0{
 	}
 
 	bool operator<(const nodeN0 &b)  const {
-		return  (st.jugador.f < b.st.jugador.f) || (st.jugador.f == b.st.jugador.f and st.jugador.c < b.st.jugador.c) || (st.jugador.f == b.st.jugador.f and st.jugador.c == b.st.jugador.c and st.jugador.brujula < b.st.jugador.brujula);
+		return  (st.jugador.f < b.st.jugador.f) || (st.jugador.f == b.st.jugador.f and st.jugador.c < b.st.jugador.c) || (st.jugador.f == b.st.jugador.f and st.jugador.c == b.st.jugador.c and st.jugador.brujula < b.st.jugador.brujula) ||
+    (st.jugador.f == b.st.jugador.f and st.jugador.c == b.st.jugador.c and st.jugador.brujula == b.st.jugador.brujula and st.colaborador.f < b.st.colaborador.f) ||
+    (st.jugador.f == b.st.jugador.f and st.jugador.c == b.st.jugador.c and st.jugador.brujula == b.st.jugador.brujula and st.colaborador.f ==b.st.colaborador.f and st.colaborador.c < b.st.colaborador.c) ||
+    (st.jugador.f == b.st.jugador.f and st.jugador.c == b.st.jugador.c and st.jugador.brujula == b.st.jugador.brujula and st.colaborador.f ==b.st.colaborador.f and st.colaborador.c == b.st.colaborador.c and st.colaborador.brujula < b.st.colaborador.brujula) ;
 	}
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct stateN1{
+/*struct stateN1{
   ubicacion jugador;
   ubicacion colaborador;
   Action ultimaOrdenColaborador;
@@ -66,7 +69,7 @@ struct nodeN1{
     (st.jugador.f == b.st.jugador.f and st.jugador.c == b.st.jugador.c and st.jugador.brujula == b.st.jugador.brujula and st.colaborador.f ==b.st.colaborador.f and st.colaborador.c < b.st.colaborador.c) ||
     (st.jugador.f == b.st.jugador.f and st.jugador.c == b.st.jugador.c and st.jugador.brujula == b.st.jugador.brujula and st.colaborador.f ==b.st.colaborador.f and st.colaborador.c == b.st.colaborador.c and st.colaborador.brujula < b.st.colaborador.brujula) ;
 	}
-};
+};*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
