@@ -63,7 +63,7 @@ stateN0 apply(const Action &a, const stateN0 &st, const vector<vector<unsigned c
 	case act_CLB_WALK:
 		st_result.ultimaOrdenColaborador = act_CLB_WALK;
 		sig_ubicacion = NextCasilla(st.colaborador);
-		if (CasillaTransitable(sig_ubicacion, mapa) and ! !(sig_ubicacion.f == st.jugador.f and sig_ubicacion.c == st.jugador.c)){
+		if (CasillaTransitable(sig_ubicacion, mapa) and !(sig_ubicacion.f == st.jugador.f and sig_ubicacion.c == st.jugador.c)){
 			st_result.colaborador = sig_ubicacion;
 		}
 	break;
@@ -86,7 +86,8 @@ stateN0 apply(const Action &a, const stateN0 &st, const vector<vector<unsigned c
 			}
 		if(st_result.ultimaOrdenColaborador == act_CLB_WALK) st_result    = apply(act_CLB_WALK, st_result, mapa);
 		if(st_result.ultimaOrdenColaborador == act_CLB_TURN_SR) st_result = apply(act_CLB_TURN_SR, st_result, mapa);
-		if(st_result.ultimaOrdenColaborador == act_CLB_STOP) st_result    = apply(act_CLB_STOP, st_result, mapa);
+		if(st_result.ultimaOrdenColaborador == act_CLB_STOP) st_result = apply(act_CLB_STOP, st_result, mapa);
+		
 	break;
 	
 	case actRUN: //si prox 2 casillas son transitables y no está ocupada por el colaborador
@@ -99,33 +100,38 @@ stateN0 apply(const Action &a, const stateN0 &st, const vector<vector<unsigned c
 		}
 		if(st_result.ultimaOrdenColaborador == act_CLB_WALK) st_result    = apply(act_CLB_WALK, st_result, mapa);
 		if(st_result.ultimaOrdenColaborador == act_CLB_TURN_SR) st_result = apply(act_CLB_TURN_SR, st_result, mapa);
-		if(st_result.ultimaOrdenColaborador == act_CLB_STOP) st_result    = apply(act_CLB_STOP, st_result, mapa);
+		if(st_result.ultimaOrdenColaborador == act_CLB_STOP) st_result = apply(act_CLB_STOP, st_result, mapa);
+		
 	break;
 
 	case actTURN_L:
 		st_result.jugador.brujula = static_cast<Orientacion>((st_result.jugador.brujula+6)%8);
 		if(st_result.ultimaOrdenColaborador == act_CLB_WALK) st_result    = apply(act_CLB_WALK, st_result, mapa);
 		if(st_result.ultimaOrdenColaborador == act_CLB_TURN_SR) st_result = apply(act_CLB_TURN_SR, st_result, mapa);
-		if(st_result.ultimaOrdenColaborador == act_CLB_STOP) st_result    = apply(act_CLB_STOP, st_result, mapa);
+		if(st_result.ultimaOrdenColaborador == act_CLB_STOP) st_result = apply(act_CLB_STOP, st_result, mapa);
+		
 	break;
 
 	case actTURN_SR:
 		st_result.jugador.brujula = static_cast<Orientacion>((st_result.jugador.brujula+1)%8);
 		if(st_result.ultimaOrdenColaborador == act_CLB_WALK) st_result    = apply(act_CLB_WALK, st_result, mapa);
 		if(st_result.ultimaOrdenColaborador == act_CLB_TURN_SR) st_result = apply(act_CLB_TURN_SR, st_result, mapa);
-		if(st_result.ultimaOrdenColaborador == act_CLB_STOP) st_result    = apply(act_CLB_STOP, st_result, mapa);
+		if(st_result.ultimaOrdenColaborador == act_CLB_STOP) st_result = apply(act_CLB_STOP, st_result, mapa);
+		
 	break;
 
 
 	case actIDLE:
 		if(st_result.ultimaOrdenColaborador == act_CLB_WALK) st_result    = apply(act_CLB_WALK, st_result, mapa);
 		if(st_result.ultimaOrdenColaborador == act_CLB_TURN_SR) st_result = apply(act_CLB_TURN_SR, st_result, mapa);
-		if(st_result.ultimaOrdenColaborador == act_CLB_STOP) st_result    = apply(act_CLB_STOP, st_result, mapa);
+		if(st_result.ultimaOrdenColaborador == act_CLB_STOP) st_result = apply(act_CLB_STOP, st_result, mapa);
 	break;
 
 	}
 	return st_result;
 }
+
+
 
 //Encuentra si el elemento item está en la lista de estados (stateN0)
 bool Find(const stateN0 &item, const list<stateN0> &lista){
@@ -183,61 +189,61 @@ void PintaPlan(const list<Action> &plan){
 	cout << " (" << plan.size() << " acciones)\n";
 }
 
-//Comprobar si el colaborador está dentro de la visión del jugador
-bool CLBenVision(const nodeN0 &current_node, const vector<vector<unsigned char>> mapa){
-	
-	int fila = current_node.st.jugador.f;
-	int col = current_node.st.jugador.c;
 
-	switch(current_node.st.jugador.brujula){
+//Comprobar si el colaborador está dentro de la visión del jugador
+bool CLBenVision(const stateN0 &st){
+	
+	int fj = st.jugador.f;
+	int cj = st.jugador.c;
+	int fc = st.colaborador.f;
+	int cc = st.colaborador.c;
+
+	switch(st.jugador.brujula){
 
 		case norte:
-			return(mapa[fila-1][col-1] == 'c' || mapa[fila-1][col] == 'c'   || mapa[fila-1][col+1] == 'c' ||
-			       mapa[fila-2][col-2] == 'c' || mapa[fila-2][col-1] == 'c' || mapa[fila-2][col] == 'c'   || mapa[fila-2][col+1] == 'c' || mapa[fila-2][col+2] == 'c' ||
-			       mapa[fila-3][col-3] == 'c' || mapa[fila-3][col-2] == 'c' || mapa[fila-3][col-1] == 'c' || mapa[fila-3][col] == 'c'   || mapa[fila-3][col+1] == 'c' ||
-			       mapa[fila-3][col+2] == 'c' || mapa[fila-3][col+3] == 'c');
+			return (((fj-1 == fc) && (cj-1 == cc)) || ((fj-1 == fc) && (cj == cc))   || ((fj-1 == fc) && (cj+1 == cc)) ||                     
+					((fj-2 == fc) && (cj-2 == cc)) || ((fj-2 == fc) && (cj-1 == cc)) || ((fj-2 == fc) && (cj == cc))   || ((fj-2 == fc) && (cj+1 == cc)) || ((fj-2 == fc) && (cj+2 == cc)) ||
+					((fj-3 == fc) && (cj-3 == cc)) || ((fj-3 == fc) && (cj-2 == cc)) || ((fj-3 == fc) && (cj-1 == cc)) || ((fj-3 == fc) && (cj == cc))   || ((fj-3 == fc) && (cj+1 == cc)) || ((fj-3 == fc) && (cj+2 == cc)) || ((fj-3 == fc) && (cj+3 == cc)));
 		break;
 		case sur: 
-			return(mapa[fila+1][col-1] == 'c' || mapa[fila+1][col] == 'c'   || mapa[fila+1][col+1] == 'c' ||
-			       mapa[fila+2][col-2] == 'c' || mapa[fila+2][col-1] == 'c' || mapa[fila+2][col] == 'c'   || mapa[fila+2][col+1] == 'c' || mapa[fila+2][col+2] == 'c' ||
-			       mapa[fila+3][col-3] == 'c' || mapa[fila+3][col-2] == 'c' || mapa[fila+3][col-1] == 'c' || mapa[fila+3][col] == 'c'   || mapa[fila+3][col+1] == 'c' ||
-			       mapa[fila+3][col+2] == 'c' || mapa[fila+3][col+3] == 'c');
+			return (((fj+1 == fc) && (cj-1 == cc)) || ((fj+1 == fc) && (cj == cc))   || ((fj+1 == fc) && (cj+1 == cc)) ||                     
+					((fj+2 == fc) && (cj-2 == cc)) || ((fj+2 == fc) && (cj-1 == cc)) || ((fj+2 == fc) && (cj == cc))   || ((fj+2 == fc) && (cj+1 == cc)) || ((fj+2 == fc) && (cj+2 == cc)) ||
+					((fj+3 == fc) && (cj+3 == cc)) || ((fj+3 == fc) && (cj-2 == cc)) || ((fj+3 == fc) && (cj-1 == cc)) || ((fj+3 == fc) && (cj == cc))   || ((fj+3 == fc) && (cj+1 == cc)) || ((fj+3 == fc) && (cj+2 == cc)) || ((fj+3 == fc) && (cj+3 == cc)));
 		break;
 		case este:
-			return(mapa[fila-1][col+1] == 'c' || mapa[fila][col+1] == 'c'   || mapa[fila+1][col+1] == 'c' ||
-			       mapa[fila-2][col+2] == 'c' || mapa[fila-1][col+2] == 'c' || mapa[fila][col+2] == 'c'   || mapa[fila+1][col+2] == 'c' || mapa[fila+2][col+2] == 'c' ||
-			       mapa[fila-3][col+3] == 'c' || mapa[fila-2][col+3] == 'c' || mapa[fila-1][col+3] == 'c' || mapa[fila][col+3] == 'c'   || mapa[fila+1][col+3] == 'c' ||
-			       mapa[fila+2][col+3] == 'c' || mapa[fila+3][col+3] == 'c');
+			return (((fj-1 == fc) && (cj+1 == cc)) || ((fj == fc) && (cj+1 == cc))   || ((fj+1 == fc) && (cj+1 == cc)) ||                     
+					((fj-2 == fc) && (cj+2 == cc)) || ((fj-1 == fc) && (cj+2 == cc)) || ((fj == fc) && (cj+2 == cc))   || ((fj+1 == fc) && (cj+2 == cc)) || ((fj+2 == fc) && (cj+2 == cc)) ||
+					((fj-3 == fc) && (cj+3 == cc)) || ((fj-2 == fc) && (cj+3 == cc)) || ((fj-1 == fc) && (cj+3 == cc)) || ((fj == fc) && (cj+3 == cc))   || ((fj+1 == fc) && (cj+3 == cc)) || ((fj+2 == fc) && (cj+3 == cc)) || ((fj+3 == fc) && (cj+3 == cc)));
 		break;
 		case oeste:
-			return(mapa[fila-1][col-1] == 'c' || mapa[fila][col-1] == 'c'   || mapa[fila+1][col-1] == 'c' ||
-			       mapa[fila-2][col-2] == 'c' || mapa[fila-1][col-2] == 'c' || mapa[fila][col-2] == 'c'   || mapa[fila+1][col-2] == 'c' || mapa[fila+2][col-2] == 'c' ||
-			       mapa[fila-3][col-3] == 'c' || mapa[fila-2][col-3] == 'c' || mapa[fila-1][col-3] == 'c' || mapa[fila][col-3] == 'c'   || mapa[fila+1][col-3] == 'c' ||
-			       mapa[fila+2][col-3] == 'c' || mapa[fila+3][col-3] == 'c');
+			return (((fj-1 == fc) && (cj-1 == cc)) || ((fj == fc) && (cj-1 == cc))   || ((fj+1 == fc) && (cj-1 == cc)) ||                     
+					((fj-2 == fc) && (cj-2 == cc)) || ((fj-1 == fc) && (cj-2 == cc)) || ((fj == fc) && (cj-2 == cc))   || ((fj+1 == fc) && (cj-2 == cc)) || ((fj+2 == fc) && (cj-2 == cc)) ||
+					((fj-3 == fc) && (cj-3 == cc)) || ((fj-2 == fc) && (cj-3 == cc)) || ((fj-1 == fc) && (cj-3 == cc)) || ((fj == fc) && (cj-3 == cc))   || ((fj+1 == fc) && (cj-3 == cc)) || ((fj+2 == fc) && (cj-3 == cc)) || ((fj+3 == fc) && (cj-3 == cc)));
+			
 		break;
-		case noroeste: 
-			return(mapa[fila][col-3] == 'c'   || mapa[fila][col-2] == 'c'   || mapa[fila][col-1] == 'c'   ||
-			       mapa[fila-1][col-3] == 'c' || mapa[fila-1][col-2] == 'c' || mapa[fila-1][col-1] == 'c' || mapa[fila-1][col] == 'c' ||
-			       mapa[fila-2][col-3] == 'c' || mapa[fila-2][col-2] == 'c' || mapa[fila-2][col-1] == 'c' || mapa[fila-2][col] == 'c' ||
-			       mapa[fila-3][col-3] == 'c' || mapa[fila-3][col-2] == 'c' || mapa[fila-3][col-1] == 'c' || mapa[fila-3][col] == 'c' );
+		case noroeste:
+			return (((fj == fc) && (cj-1 == cc)) || ((fj == fc) && (cj-2 == cc))   || ((fj == fc) && (cj-3 == cc))   ||                     
+					((fj-1 == fc) && (cj == cc)) || ((fj-1 == fc) && (cj-1 == cc)) || ((fj-1 == fc) && (cj-2 == cc)) || ((fj-1 == fc) && (cj-3 == cc)) || 
+					((fj-2 == fc) && (cj == cc)) || ((fj-2 == fc) && (cj-1 == cc)) || ((fj-2 == fc) && (cj-2 == cc)) || ((fj-2 == fc) && (cj-3 == cc)) || 
+					((fj-3 == fc) && (cj == cc)) || ((fj-3 == fc) && (cj-1 == cc)) || ((fj-3 == fc) && (cj-2 == cc)) || ((fj-3 == fc) && (cj-3 == cc)));
 		break;
 		case suroeste:
-			return(mapa[fila][col-1] == 'c'   || mapa[fila][col-2] == 'c'   || mapa[fila][col-3] == 'c'   ||
-			       mapa[fila+1][col] == 'c'   || mapa[fila+1][col-1] == 'c' || mapa[fila+1][col-2] == 'c' || mapa[fila+1][col-3] == 'c' ||
-			       mapa[fila+2][col] == 'c'   || mapa[fila+2][col-1] == 'c' || mapa[fila+2][col-2] == 'c' || mapa[fila+2][col-3] == 'c' || 
-			       mapa[fila+3][col] == 'c'   || mapa[fila+3][col-1] == 'c' || mapa[fila+3][col-2] == 'c' || mapa[fila+3][col-3] == 'c');
+			return (((fj == fc) && (cj-1 == cc)) || ((fj == fc) && (cj-2 == cc))   || ((fj == fc) && (cj-3 == cc))   ||                     
+					((fj+1 == fc) && (cj == cc)) || ((fj+1 == fc) && (cj-1 == cc)) || ((fj+1 == fc) && (cj-2 == cc)) || ((fj+1 == fc) && (cj-3 == cc)) || 
+					((fj+2 == fc) && (cj == cc)) || ((fj+2 == fc) && (cj-1 == cc)) || ((fj+2 == fc) && (cj-2 == cc)) || ((fj+2 == fc) && (cj-3 == cc)) || 
+					((fj+3 == fc) && (cj == cc)) || ((fj+3 == fc) && (cj-1 == cc)) || ((fj+3 == fc) && (cj-2 == cc)) || ((fj+3 == fc) && (cj-3 == cc)));
 		break;
 		case noreste:
-			return(mapa[fila][col+1] == 'c'   || mapa[fila][col+2] == 'c'   || mapa[fila][col+3] == 'c'   ||
-			       mapa[fila-1][col] == 'c'   || mapa[fila-1][col+1] == 'c' || mapa[fila-1][col+2] == 'c' || mapa[fila-1][col+3] == 'c' ||
-			       mapa[fila-2][col] == 'c'   || mapa[fila-2][col+1] == 'c' || mapa[fila-2][col+2] == 'c' || mapa[fila-2][col+3] == 'c' ||
-			       mapa[fila-3][col] == 'c'   || mapa[fila-3][col+1] == 'c' || mapa[fila-3][col+2] == 'c' || mapa[fila-3][col+3] == 'c' );
+			return (((fj == fc) && (cj+1 == cc)) || ((fj == fc) && (cj+2 == cc))   || ((fj == fc) && (cj+3 == cc))   ||                     
+					((fj-1 == fc) && (cj == cc)) || ((fj-1 == fc) && (cj+1 == cc)) || ((fj-1 == fc) && (cj+2 == cc)) || ((fj-1 == fc) && (cj+3 == cc)) || 
+					((fj-2 == fc) && (cj == cc)) || ((fj-2 == fc) && (cj+1 == cc)) || ((fj-2 == fc) && (cj+2 == cc)) || ((fj-2 == fc) && (cj+3 == cc)) || 
+					((fj-3 == fc) && (cj == cc)) || ((fj-3 == fc) && (cj+1 == cc)) || ((fj-3 == fc) && (cj+2 == cc)) || ((fj-3 == fc) && (cj+3 == cc)));
 		break;
 		case sureste:
-			return(mapa[fila][col+1] == 'c'   || mapa[fila][col+2] == 'c'   || mapa[fila][col+3] == 'c'   ||
-			       mapa[fila+1][col] == 'c'   || mapa[fila+1][col+1] == 'c' || mapa[fila+1][col+2] == 'c' || mapa[fila+1][col+3] == 'c' ||
-			       mapa[fila+2][col] == 'c'   || mapa[fila+2][col+1] == 'c' || mapa[fila+2][col+2] == 'c' || mapa[fila+2][col+3] == 'c' || 
-			       mapa[fila+3][col] == 'c'   || mapa[fila+3][col+1] == 'c' || mapa[fila+3][col+2] == 'c' || mapa[fila+3][col+3] == 'c');
+			return (((fj == fc) && (cj+1 == cc)) || ((fj == fc) && (cj+2 == cc))   || ((fj == fc) && (cj+3 == cc))   ||                     
+					((fj+1 == fc) && (cj == cc)) || ((fj+1 == fc) && (cj+1 == cc)) || ((fj+1 == fc) && (cj+2 == cc)) || ((fj+1 == fc) && (cj+3 == cc)) || 
+					((fj+2 == fc) && (cj == cc)) || ((fj+2 == fc) && (cj+1 == cc)) || ((fj+2 == fc) && (cj+2 == cc)) || ((fj+2 == fc) && (cj+3 == cc)) || 
+					((fj+3 == fc) && (cj == cc)) || ((fj+3 == fc) && (cj+1 == cc)) || ((fj+3 == fc) && (cj+2 == cc)) || ((fj+3 == fc) && (cj+3 == cc)));
 		break;
 	}
 }
@@ -450,6 +456,7 @@ list <Action> AnchuraSoloJugador_V3(const stateN0 &inicio, const ubicacion &fina
 	return plan;
 }
 
+//ANCHURA COLABORADOR
 list <Action> AnchuraColaborador(const stateN0 &inicio, const ubicacion &final, const vector<vector<unsigned char>> &mapa){
 	nodeN0 current_node;
 	list<nodeN0> frontier;
@@ -464,9 +471,10 @@ list <Action> AnchuraColaborador(const stateN0 &inicio, const ubicacion &final, 
 		frontier.pop_front();
 		explored.insert(current_node);
 
-		if(CLBenVision(current_node, mapa)){
+		if(CLBenVision(current_node.st)){
+			
 			//Generar hijo act_CLB_walk
-			if(current_node.st.ultimaOrdenColaborador != act_CLB_WALK){		 //Hace que no genere el hijo de CLB_WALK en caso de haber dado la orden anteriormente y no haberlo parado
+				 //Hace que no genere el hijo de CLB_WALK en caso de haber dado la orden anteriormente y no haberlo parado
 				nodeN0 child_clbwalk = current_node;
 				child_clbwalk.st = apply(act_CLB_WALK, current_node.st, mapa);
 				child_clbwalk.secuencia.push_back(act_CLB_WALK);
@@ -476,32 +484,36 @@ list <Action> AnchuraColaborador(const stateN0 &inicio, const ubicacion &final, 
 				}else if (explored.find(child_clbwalk) == explored.end()){
 					frontier.push_back(child_clbwalk);
 				}
-			}
 			
-			if(!SolutionFound and current_node.st.ultimaOrdenColaborador != act_CLB_TURN_SR){
+			
+			if(!SolutionFound){
+				if(current_node.st.ultimaOrdenColaborador != act_CLB_TURN_SR){
 				//Generar hijo act_CLB_TURN_SR
 				nodeN0 child_clbturnsr = current_node;
 				child_clbturnsr.st = apply(act_CLB_TURN_SR, current_node.st, mapa);
 				child_clbturnsr.secuencia.push_back(act_CLB_TURN_SR);
 				if (explored.find(child_clbturnsr) == explored.end()){
-				frontier.push_back(child_clbturnsr);
-				}		
-			}
-
-			if(!SolutionFound and current_node.st.ultimaOrdenColaborador != act_CLB_STOP){
-				//Generar hijo act_CLB-STOP
-				nodeN0 child_clbstop = current_node;
-				child_clbstop.st = apply(act_CLB_STOP, current_node.st, mapa);
-				child_clbstop.secuencia.push_back(act_CLB_TURN_SR);
-				if (explored.find(child_clbstop) == explored.end()){
-				frontier.push_back(child_clbstop);
+					frontier.push_back(child_clbturnsr);
 				}	
+				}
+			
+			
+				if(current_node.st.ultimaOrdenColaborador != act_CLB_STOP){
+					//Generar hijo act_CLB-STOP
+					nodeN0 child_clbstop = current_node;
+					child_clbstop.st = apply(act_CLB_STOP, current_node.st, mapa);
+					child_clbstop.secuencia.push_back(act_CLB_STOP);
+					if (explored.find(child_clbstop) == explored.end()){
+					frontier.push_back(child_clbstop);
+					}	
+				
+				}
 			}
+			
 		}
 
 
 		if(!SolutionFound){
-
 			// Generar hijo actWALK
 			nodeN0 child_walk = current_node;
 			child_walk.st = apply(actWALK, current_node.st, mapa);
@@ -509,6 +521,7 @@ list <Action> AnchuraColaborador(const stateN0 &inicio, const ubicacion &final, 
 			if (explored.find(child_walk) == explored.end()){   // SI EL NODO NO ESTÁ EN EXPLORADOS, LO METO EN FRONTIER
 				frontier.push_back(child_walk);
 			}
+		
 
 			// Generar hijo actRUN
 			nodeN0 child_run = current_node;
@@ -517,6 +530,7 @@ list <Action> AnchuraColaborador(const stateN0 &inicio, const ubicacion &final, 
 			if (explored.find(child_run) == explored.end()){
 				frontier.push_back(child_run);
 			}
+		
 
 			// Generar hijo actTURN_L
 			nodeN0 child_turnl = current_node;
@@ -542,6 +556,14 @@ list <Action> AnchuraColaborador(const stateN0 &inicio, const ubicacion &final, 
 				frontier.push_back(child_idle);
 			}
 		}
+
+		if (!SolutionFound and !frontier.empty()){
+			current_node = frontier.front();
+		 	while(!frontier.empty() and explored.find(current_node) != explored.end()){
+				frontier.pop_front();
+				if(!frontier.empty()) current_node = frontier.front();
+			}
+		}
 	}
 
 	if(SolutionFound){
@@ -551,6 +573,7 @@ list <Action> AnchuraColaborador(const stateN0 &inicio, const ubicacion &final, 
 	}
 	return plan;
 }
+	
 
 
 //Pone a cero todos los elementos de una matriz
@@ -566,8 +589,8 @@ void ComportamientoJugador::VisualizaPlan(const stateN0 &st, const list<Action> 
 	stateN0 cst = st;
 
 	auto it = plan.begin();
-	while (it != plan.end()){
-
+	while (it != plan.end())
+	{
 		if ((*it != act_CLB_WALK) and (*it != act_CLB_TURN_SR) and (*it != act_CLB_STOP))
 		{
 			switch (cst.ultimaOrdenColaborador)
@@ -640,8 +663,7 @@ Action ComportamientoJugador::think(Sensores sensores)
 			switch (sensores.nivel){
 				case 0: plan = AnchuraSoloJugador_V3(c_state, goal, mapaResultado);
 					break;
-				case 1: 
-					//Incluir aquí la llamada al alg. búsqueda del nivel 1
+				case 1: plan = AnchuraColaborador(c_state, goal, mapaResultado);
 					break;
 				case 2: 
 					//Incluir aquí la llamada al alg. búsqueda del nivel 2
