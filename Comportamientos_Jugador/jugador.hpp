@@ -42,7 +42,38 @@ struct nodeN0{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+struct stateN2{
+  ubicacion jugador, colaborador; //He dejado la ubicacion del colaborador para el apply ya que necesito saber donde está para no chocarse
+  int coste;
+  bool bikini, zapatillas;
 
+  bool operator==(const stateN2 &x)const{
+    if(jugador == x.jugador and bikini == x.bikini and zapatillas == x.zapatillas and coste == x.coste){
+        return true;
+    }
+    else {
+      return false;
+    }
+  }
+};
+
+//Definición del tipo nodo del nivel 2
+struct nodeN2{
+	stateN2 st;
+	list<Action> secuencia;
+  
+	bool operator==(const nodeN2 &n) const {
+		return (st == n.st);
+	}
+
+	bool operator<(const nodeN2 &b) const {
+		return (st.jugador.f < b.st.jugador.f) || (st.jugador.f == b.st.jugador.f and st.jugador.c < b.st.jugador.c) || (st.jugador.f == b.st.jugador.f and st.jugador.c == b.st.jugador.c and st.jugador.brujula < b.st.jugador.brujula) || 
+           (st.jugador.f == b.st.jugador.f and st.jugador.c == b.st.jugador.c and st.jugador.brujula == b.st.jugador.brujula and st.bikini < b.st.bikini) ||
+           (st.jugador.f == b.st.jugador.f and st.jugador.c == b.st.jugador.c and st.jugador.brujula == b.st.jugador.brujula and st.bikini == b.st.bikini and st.zapatillas < b.st.zapatillas); 
+	} 
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class ComportamientoJugador : public Comportamiento {
   public:
 
@@ -69,6 +100,7 @@ class ComportamientoJugador : public Comportamiento {
     list<Action> plan; //Almacena el plan en ejecución
     bool hayPlan;      //Si es true indica que se está siguiendo un plan
     stateN0 c_state;
+    stateN2 c_state2;
     ubicacion goal;
 };
 
