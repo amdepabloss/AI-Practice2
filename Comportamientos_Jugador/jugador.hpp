@@ -44,16 +44,22 @@ struct nodeN0{
 
 struct stateN2{
   ubicacion jugador, colaborador; //He dejado la ubicacion del colaborador para el apply ya que necesito saber donde está para no chocarse
-  int coste;
   bool bikini, zapatillas;
 
   bool operator==(const stateN2 &x)const{
-    if(jugador == x.jugador and bikini == x.bikini and zapatillas == x.zapatillas and coste == x.coste){
+    if(jugador == x.jugador and bikini == x.bikini and zapatillas == x.zapatillas){  //El coste no lo comparo ya que pueden haber 2 nodos que sean el mismo pero tienen coste diferente porque la forma de llegar a ellos es diferente.
         return true;
     }
     else {
       return false;
     }
+  }
+
+  bool operator<(const stateN2 &estado)const {
+    return (jugador.f < estado.jugador.f) || (jugador.f == estado.jugador.f and jugador.c < estado.jugador.c) || (jugador.f == estado.jugador.f and jugador.c == estado.jugador.c and jugador.brujula < estado.jugador.brujula) || 
+           (jugador.f == estado.jugador.f and jugador.c == estado.jugador.c and jugador.brujula == estado.jugador.brujula and bikini < estado.bikini) ||
+           (jugador.f == estado.jugador.f and jugador.c == estado.jugador.c and jugador.brujula == estado.jugador.brujula and bikini == estado.bikini and zapatillas < estado.zapatillas);
+           
   }
 };
 
@@ -61,16 +67,15 @@ struct stateN2{
 struct nodeN2{
 	stateN2 st;
 	list<Action> secuencia;
+  int coste;
   
 	bool operator==(const nodeN2 &n) const {
 		return (st == n.st);
 	}
 
 	bool operator<(const nodeN2 &b) const {
-		return (st.jugador.f < b.st.jugador.f) || (st.jugador.f == b.st.jugador.f and st.jugador.c < b.st.jugador.c) || (st.jugador.f == b.st.jugador.f and st.jugador.c == b.st.jugador.c and st.jugador.brujula < b.st.jugador.brujula) || 
-           (st.jugador.f == b.st.jugador.f and st.jugador.c == b.st.jugador.c and st.jugador.brujula == b.st.jugador.brujula and st.bikini < b.st.bikini) ||
-           (st.jugador.f == b.st.jugador.f and st.jugador.c == b.st.jugador.c and st.jugador.brujula == b.st.jugador.brujula and st.bikini == b.st.bikini and st.zapatillas < b.st.zapatillas); 
-	} 
+		return (coste > b.coste);          
+  }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,7 +105,7 @@ class ComportamientoJugador : public Comportamiento {
     list<Action> plan; //Almacena el plan en ejecución
     bool hayPlan;      //Si es true indica que se está siguiendo un plan
     stateN0 c_state;
-    stateN2 c_state2;
+    nodeN2 c_node;
     ubicacion goal;
 };
 
