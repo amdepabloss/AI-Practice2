@@ -5,6 +5,7 @@
 #include <list>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Definición del tipo estado del nivel 0 y 1
 struct stateN0{
   ubicacion jugador;
   ubicacion colaborador;
@@ -22,7 +23,7 @@ struct stateN0{
   }
 };
 
-//Definición del tipo nodo del nivel 0
+//Definición del tipo nodo del nivel 0 y 1
 struct nodeN0{
 	stateN0 st;
 	list<Action> secuencia;
@@ -42,6 +43,7 @@ struct nodeN0{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//Definición del tipo estado del nivel 2
 struct stateN2{
   ubicacion jugador, colaborador; //He dejado la ubicacion del colaborador para el apply ya que necesito saber donde está para no chocarse
   bool bikini, zapatillas;
@@ -79,6 +81,59 @@ struct nodeN2{
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Definición del tipo estado del nivel 3
+struct stateN3{
+  ubicacion jugador, colaborador; 
+  bool bikini_colab, zapatillas_colab, bikini_jug, zapatillas_jug;
+  Action ultimaOrdenColaborador;                                                                                                                                                                    
+
+  bool operator==(const stateN3 &x)const{                                                         
+    if(jugador == x.jugador and colaborador.f == x.colaborador.f and colaborador.c == x.colaborador.c and ultimaOrdenColaborador == x.ultimaOrdenColaborador and
+      bikini_jug == x.bikini_jug and zapatillas_jug == x.zapatillas_jug and bikini_colab == x.bikini_colab and zapatillas_colab == x.zapatillas_colab){  
+        return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  
+  bool operator<(const stateN3 &b)const {
+    return (jugador.f < b.jugador.f) || 
+           (jugador.f == b.jugador.f and jugador.c < b.jugador.c) || 
+           (jugador.f == b.jugador.f and jugador.c == b.jugador.c and jugador.brujula < b.jugador.brujula) ||
+           (jugador.f == b.jugador.f and jugador.c == b.jugador.c and jugador.brujula == b.jugador.brujula and colaborador.f < b.colaborador.f) ||
+           (jugador.f == b.jugador.f and jugador.c == b.jugador.c and jugador.brujula == b.jugador.brujula and colaborador.f ==b.colaborador.f and colaborador.c < b.colaborador.c) ||
+           (jugador.f == b.jugador.f and jugador.c == b.jugador.c and jugador.brujula == b.jugador.brujula and colaborador.f ==b.colaborador.f and colaborador.c == b.colaborador.c and colaborador.brujula < b.colaborador.brujula) ||
+           (jugador.f == b.jugador.f and jugador.c == b.jugador.c and jugador.brujula == b.jugador.brujula and colaborador.f ==b.colaborador.f and colaborador.c == b.colaborador.c and colaborador.brujula == b.colaborador.brujula and ultimaOrdenColaborador < b.ultimaOrdenColaborador) ||
+           (jugador.f == b.jugador.f and jugador.c == b.jugador.c and jugador.brujula == b.jugador.brujula and colaborador.f ==b.colaborador.f and colaborador.c == b.colaborador.c and colaborador.brujula == b.colaborador.brujula and ultimaOrdenColaborador == b.ultimaOrdenColaborador and bikini_jug < b.bikini_jug) || 
+           (jugador.f == b.jugador.f and jugador.c == b.jugador.c and jugador.brujula == b.jugador.brujula and colaborador.f ==b.colaborador.f and colaborador.c == b.colaborador.c and colaborador.brujula == b.colaborador.brujula and ultimaOrdenColaborador == b.ultimaOrdenColaborador and bikini_jug == b.bikini_jug and zapatillas_jug < b.zapatillas_jug) ||
+           (jugador.f == b.jugador.f and jugador.c == b.jugador.c and jugador.brujula == b.jugador.brujula and colaborador.f ==b.colaborador.f and colaborador.c == b.colaborador.c and colaborador.brujula == b.colaborador.brujula and ultimaOrdenColaborador == b.ultimaOrdenColaborador and bikini_jug == b.bikini_jug and zapatillas_jug == b.zapatillas_jug and bikini_colab < b.bikini_colab) ||
+           (jugador.f == b.jugador.f and jugador.c == b.jugador.c and jugador.brujula == b.jugador.brujula and colaborador.f ==b.colaborador.f and colaborador.c == b.colaborador.c and colaborador.brujula == b.colaborador.brujula and ultimaOrdenColaborador == b.ultimaOrdenColaborador and bikini_jug == b.bikini_jug and zapatillas_jug == b.zapatillas_jug and bikini_colab == b.bikini_colab and zapatillas_colab < b.zapatillas_colab);
+  }
+};
+
+//Definición del tipo nodo del nivel 3
+struct nodeN3{
+	stateN3 st;
+	list<Action> secuencia;
+  int coste;
+  int heuristica;   
+  
+	bool operator==(const nodeN3 &n) const {
+		return (st == n.st);
+	}
+
+	bool operator<(const nodeN3 &b) const {  
+		return ((coste+heuristica) > (b.coste+b.heuristica));          
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 class ComportamientoJugador : public Comportamiento {
   public:
 
@@ -106,6 +161,7 @@ class ComportamientoJugador : public Comportamiento {
     bool hayPlan;      //Si es true indica que se está siguiendo un plan
     stateN0 c_state;
     nodeN2 c_node;
+    nodeN3 c_nodeN3;
     ubicacion goal;
 };
 
